@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сводный аудит позиций — sequoia-service.ru</title>
+<style>
+  :root {
+    --bg: #f6f8fa;
+    --card: #ffffff;
+    --text: #1f2328;
+    --muted: #656d76;
+    --border: #d0d7de;
+    --google: #4285f4;
+    --yandex: #ffcc00;
+    --yandex-text: #1a1a1a;
+    --critical: #cf222e;
+    --high: #bc4c00;
+    --medium: #0969da;
+    --success: #1a7f37;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 24px;
+    line-height: 1.55;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: 28px; margin-bottom: 6px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 2px rgba(31,35,40,0.04);
+  }
+  h2 { font-size: 20px; margin-top: 0; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  h3 { font-size: 16px; margin: 18px 0 10px; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: #f3f4f6; font-weight: 600; color: var(--muted); white-space: nowrap; }
+  tr:hover td { background: #f6f8fa; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .badge-critical { background: #ffebe9; color: var(--critical); }
+  .badge-high { background: #fff1e5; color: var(--high); }
+  .badge-medium { background: #ddf4ff; color: var(--medium); }
+  .badge-google { background: #e8f0fe; color: var(--google); }
+  .badge-yandex { background: #fff8c5; color: var(--yandex-text); }
+  .badge-both { background: #dafbe1; color: var(--success); }
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+  .kpi {
+    background: linear-gradient(180deg, #fff, #f9fafb);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+  }
+  .kpi-value { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .kpi-label { font-size: 12px; color: var(--muted); }
+  .google { color: var(--google); }
+  .yandex { color: #c28a00; }
+  .combined { color: var(--success); }
+  .insight {
+    background: #fff8c5;
+    border-left: 4px solid var(--yandex);
+    padding: 12px 16px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 10px 0;
+    font-size: 13px;
+  }
+  .todo { list-style: none; padding: 0; margin: 0; }
+  .todo li { padding: 6px 0; display: flex; align-items: flex-start; gap: 8px; font-size: 13px; }
+  .todo li::before { content: "☐"; color: var(--muted); font-size: 14px; }
+  .phase { margin-bottom: 14px; }
+  .phase-title { font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+  .phase-desc { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .scroll-x { overflow-x: auto; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 30px; padding-bottom: 20px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>🔍 Сводный аудит позиций</h1>
+  <div class="subtitle">sequoia-service.ru · Google Search Console + Яндекс.Вебмастер · 29.05.2026</div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-value google">1 003</div>
+      <div class="kpi-label">Запросов в Google</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value yandex">2 955</div>
+      <div class="kpi-label">Запросов в Яндексе</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value combined">1 519</div>
+      <div class="kpi-label">Всего кликов</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value combined">116 250</div>
+      <div class="kpi-label">Всего показов</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value google">12.4</div>
+      <div class="kpi-label">Средняя позиция Google</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-value yandex">9.6</div>
+      <div class="kpi-label">Средняя позиция Яндекс</div>
+    </div>
+  </div>
+
+  <!-- Insights -->
+  <div class="card">
+    <h2>💡 Ключевые выводы</h2>
+    <div class="insight">
+      <strong>Яндекс сильнее:</strong> 976 кликов против 543 в Google, средняя позиция лучше (9.6 против 12.4). Сайт лучше ранжируется в Яндексе.
+    </div>
+    <div class="insight">
+      <strong>Google — больший потенциал:</strong> 66 тыс. показов, но низкий CTR. При росте позиций прирост кликов будет значительным.
+    </div>
+    <div class="insight">
+      <strong>2 877 запросов</strong> застряли в позициях 6-20 в обеих системах — это главное поле боя "от топ-20 до топ-5".
+    </div>
+  </div>
+
+  <!-- Position Distribution -->
+  <div class="card">
+    <h2>📊 Распределение позиций: сравнение</h2>
+    <div class="scroll-x">
+      <table>
+        <thead>
+          <tr>
+            <th>Диапазон</th>
+            <th class="num">Google — запросы</th>
+            <th class="num">Google — клики</th>
+            <th class="num">Яндекс — запросы</th>
+            <th class="num">Яндекс — клики</th>
+            <th>Приоритет</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1-3 (Топ)</td><td class="num">61</td><td class="num">158</td><td class="num">212</td><td class="num">325</td><td><span class="badge badge-medium">Удерживать</span></td></tr>
+          <tr><td>4-5 (У топа)</td><td class="num">72</td><td class="num">254</td><td class="num">294</td><td class="num">82</td><td><span class="badge badge-medium">В топ-3</span></td></tr>
+          <tr style="background:#fff8c5"><td><strong>6-10 (Высокий приоритет)</strong></td><td class="num"><strong>272</strong></td><td class="num"><strong>81</strong></td><td class="num"><strong>1 562</strong></td><td class="num"><strong>294</strong></td><td><span class="badge badge-critical">🔥 ГЛАВНЫЙ ФОКУС</span></td></tr>
+          <tr style="background:#fff8c5"><td><strong>11-20 (Средний приоритет)</strong></td><td class="num"><strong>337</strong></td><td class="num"><strong>45</strong></td><td class="num"><strong>706</strong></td><td class="num"><strong>78</strong></td><td><span class="badge badge-critical">🔥 ГЛАВНЫЙ ФОКУС</span></td></tr>
+          <tr><td>21-50 (Хвост)</td><td class="num">245</td><td class="num">5</td><td class="num">89</td><td class="num">32</td><td><span class="badge badge-high">Мониторить</span></td></tr>
+          <tr><td>50+ (Глубина)</td><td class="num">12</td><td class="num">0</td><td class="num">9</td><td class="num">3</td><td><span class="badge badge-medium">Игнорировать</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Cross-Engine Matrix -->
+  <div class="card">
+    <h2>🎯 Матрица возможностей: оба движка</h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:-8px;margin-bottom:10px;">Запросы, присутствующие в ОБЕИХ системах в позициях 6-20 — возможности с высокой достоверностью.</p>
+    <div class="scroll-x">
+      <table>
+        <thead>
+          <tr>
+            <th>Запрос</th>
+            <th class="num">Поз. Google</th>
+            <th class="num">Поз. Яндекс</th>
+            <th class="num">Показы Google</th>
+            <th class="num">Показы Яндекс</th>
+            <th class="num">Всего показов</th>
+            <th class="num">Прогноз прироста</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>аутсорсинг разнорабочих</strong></td><td class="num">10.7</td><td class="num">11.6</td><td class="num">1 208</td><td class="num">373</td><td class="num"><strong>1 581</strong></td><td class="num">+134</td></tr>
+          <tr><td><strong>услуги грузчиков аутсорсинг</strong></td><td class="num">12.3</td><td class="num">12.5</td><td class="num">228</td><td class="num">1 082</td><td class="num"><strong>1 310</strong></td><td class="num">+111</td></tr>
+          <tr><td>аутсорсинг комплектовщиков</td><td class="num">17.1</td><td class="num">13.8</td><td class="num">517</td><td class="num">466</td><td class="num"><strong>983</strong></td><td class="num">+83</td></tr>
+          <tr><td>аутсорсинг курьеров</td><td class="num">18.3</td><td class="num">10.4</td><td class="num">390</td><td class="num">417</td><td class="num"><strong>807</strong></td><td class="num">+68</td></tr>
+          <tr><td>аутсорсинг сборщиков</td><td class="num">14.5</td><td class="num">10.5</td><td class="num">255</td><td class="num">498</td><td class="num"><strong>753</strong></td><td class="num">+64</td></tr>
+          <tr><td>аутсорсинг продавцов</td><td class="num">18.8</td><td class="num">9.5</td><td class="num">262</td><td class="num">403</td><td class="num"><strong>665</strong></td><td class="num">+56</td></tr>
+          <tr><td>аутсорсинг кассиров</td><td class="num">9.6</td><td class="num">8.9</td><td class="num">271</td><td class="num">381</td><td class="num"><strong>652</strong></td><td class="num">+55</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Top 15 Opportunities -->
+  <div class="card">
+    <h2>🏆 Топ-15 возможностей</h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:-8px;margin-bottom:10px;">Ранжированы по суммарным показам в обеих системах. Запросы в позициях 6-20 хотя бы в одном движке.</p>
+    <div class="scroll-x">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Запрос</th>
+            <th>Приоритет</th>
+            <th>Движки</th>
+            <th class="num">Позиции</th>
+            <th class="num">Всего показов</th>
+            <th class="num">Прогноз прироста</th>
+            <th>Действие</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>аутсорсинг разнорабочих</td><td><span class="badge badge-critical">Критично</span></td><td><span class="badge badge-both">Оба</span></td><td class="num">G:10.7 / Y:11.6</td><td class="num">1 581</td><td class="num">+134</td><td>Бэклинки + контент</td></tr>
+          <tr><td>2</td><td>услуги грузчиков аутсорсинг</td><td><span class="badge badge-critical">Критично</span></td><td><span class="badge badge-both">Оба</span></td><td class="num">G:12.3 / Y:12.5</td><td class="num">1 310</td><td class="num">+111</td><td>Гост-посты + цены</td></tr>
+          <tr><td>3</td><td>подбор персонала для пищевого производства</td><td><span class="badge badge-critical">Критично</span></td><td><span class="badge badge-yandex">Яндекс</span></td><td class="num">Y:8.9</td><td class="num">1 091</td><td class="num">+93</td><td>Создать посадочную</td></tr>
+          <tr><td>4</td><td>аутсорсинг комплектовщиков</td><td><span class="badge badge-critical">Критично</span></td><td><span class="badge badge-both">Оба</span></td><td class="num">G:17.1 / Y:13.8</td><td class="num">983</td><td class="num">+83</td><td>Сравнение + видео</td></tr>
+          <tr><td>5</td><td>аутсорсинг курьеров</td><td><span class="badge badge-high">Высокий</span></td><td><span class="badge badge-both">Оба</span></td><td class="num">G:18.3 / Y:10.4</td><td class="num">807</td><td class="num">+68</td><td>Цены + посадочная</td></tr>
+          <tr><td>6</td><td>аутсорсинг сборщиков</td><td><span class="badge badge-high">Высокий</span></td><td><span class="badge badge-both">Оба</span></td><td class="num">G:14.5 / Y:10.5</td><td class="num">753</td><td class="num">+64</td><td>Каталоги отраслей</td></tr>
+          <tr><td>7</td><td>аутсорсинг линейного персонала</td><td><span class="badge badge-high">Высокий</span></td><td><span class="badge badge-yandex">Яндекс</span></td><td class="num">Y:9.8</td><td class="num">672</td><td class="num">+57</td><td>Расширить контент</td></tr>
+          <tr><td>8</td><td>аутсорсинг продавцов</td><td><span class="badge badge-high">Высокий</span></td><td><span class="badge badge-both">Оба</span></td><td class="num">G:18.8 / Y:9.5</td><td class="num">665</td><td class="num">+56</td><td>Кейсы клиентов</td></tr>
+          <tr><td>9</td><td>аутсорсинг кассиров</td><td><span class="badge badge-high">Высокий</span></td><td><span class="badge badge-both">Оба</span></td><td class="num">G:9.6 / Y:8.9</td><td class="num">652</td><td class="num">+55</td><td>FAQ-схема</td></tr>
+          <tr><td>10</td><td>аутсорсинг персонала москва</td><td><span class="badge badge-medium">Средний</span></td><td><span class="badge badge-google">Google</span></td><td class="num">G:13.8</td><td class="num">486</td><td class="num">+38</td><td>Гео-сигналы + Карты</td></tr>
+          <tr><td>11</td><td>аутсорсинг линейного персонала в воронеже</td><td><span class="badge badge-medium">Средний</span></td><td><span class="badge badge-yandex">Яндекс</span></td><td class="num">Y:9.8</td><td class="num">481</td><td class="num">+41</td><td>Гео-контент</td></tr>
+          <tr><td>12</td><td>аутсорсинг персонала стоимость услуг</td><td><span class="badge badge-medium">Средний</span></td><td><span class="badge badge-yandex">Яндекс</span></td><td class="num">Y:6.7</td><td class="num">527</td><td class="num">+32</td><td>Оптимизировать title/meta</td></tr>
+          <tr><td>13</td><td>аутсорсинг слесарей</td><td><span class="badge badge-medium">Средний</span></td><td><span class="badge badge-yandex">Яндекс</span></td><td class="num">Y:8.1</td><td class="num">510</td><td class="num">+43</td><td>Страница услуги + видео</td></tr>
+          <tr><td>14</td><td>аутсорсинг персонала цена</td><td><span class="badge badge-medium">Средний</span></td><td><span class="badge badge-yandex">Яндекс</span></td><td class="num">Y:10.0</td><td class="num">691</td><td class="num">+57</td><td>Таблица цен</td></tr>
+          <tr><td>15</td><td>аутсорсинг грузчиков</td><td><span class="badge badge-medium">Средний</span></td><td><span class="badge badge-google">Google</span></td><td class="num">G:17.8</td><td class="num">492</td><td class="num">+42</td><td>Объединить страницы</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Action Plan -->
+  <div class="card">
+    <h2>🚀 План действий: «От топ-20 до топ-5»</h2>
+
+    <div class="phase">
+      <div class="phase-title">Фаза 1 — Быстрые победы (1-2 недели)</div>
+      <div class="phase-desc">Цель: запросы в позициях 6-10 с высокими показами, но 0-1 кликом (CTR < 0.5%). Ожидаемый эффект: <strong>+300-400 кликов/мес</strong>.</div>
+      <div class="scroll-x">
+        <table>
+          <thead><tr><th>Запрос</th><th class="num">Поз.</th><th class="num">Показы</th><th class="num">Клики</th><th class="num">CTR</th><th>Действие</th></tr></thead>
+          <tbody>
+            <tr><td>аутсорсинг разнорабочих</td><td class="num">10.7</td><td class="num">1 208</td><td class="num">0</td><td class="num">0.0%</td><td>Переписать title + description</td></tr>
+            <tr><td>вахтовый метод</td><td class="num">9.3</td><td class="num">966</td><td class="num">0</td><td class="num">0.0%</td><td>Добавить FAQ-схему</td></tr>
+            <tr><td>аутсорсинг грузчиков</td><td class="num">17.8</td><td class="num">492</td><td class="num">0</td><td class="num">0.0%</td><td>Создать посадочную страницу</td></tr>
+            <tr><td>аутсорсинг грузчиков на склад</td><td class="num">19.9</td><td class="num">451</td><td class="num">0</td><td class="num">0.0%</td><td>Склеить или каноникализовать</td></tr>
+            <tr><td>аутсорсинг курьеров</td><td class="num">18.3</td><td class="num">390</td><td class="num">0</td><td class="num">0.0%</td><td>Добавить таблицу цен</td></tr>
+            <tr><td>аутсорсинг персонала грузчики</td><td class="num">16.2</td><td class="num">387</td><td class="num">0</td><td class="num">0.0%</td><td>Объединить страницы</td></tr>
+            <tr><td>персонал на склад</td><td class="num">17.7</td><td class="num">387</td><td class="num">0</td><td class="num">0.0%</td><td>Оптимизировать H1 + вступление</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-title">Фаза 2 — Контент и рост позиций (3-6 недель)</div>
+      <div class="phase-desc">Цель: запросы в позициях 11-20 с >200 показов. Ожидаемый эффект: <strong>+200-300 кликов/мес</strong>.</div>
+      <div class="scroll-x">
+        <table>
+          <thead><tr><th>Запрос</th><th class="num">Поз.</th><th class="num">Показы</th><th>Проблема</th><th>Действие</th></tr></thead>
+          <tbody>
+            <tr><td>аутсорсинговая компания</td><td class="num">17.3</td><td class="num">569</td><td>Слабые сигналы бренда</td><td>Добавить логотипы клиентов, кейсы</td></tr>
+            <tr><td>аутсорсинг комплектовщиков</td><td class="num">17.1</td><td class="num">517</td><td>Мало контента</td><td>Расширить до 1 500+ слов, добавить видео</td></tr>
+            <tr><td>аутсорсинг персонала москва</td><td class="num">13.8</td><td class="num">486</td><td>Слабые гео-сигналы</td><td>Добавить адрес Москвы, Яндекс.Карты</td></tr>
+            <tr><td>аутсорсинг грузчиков на склад</td><td class="num">19.9</td><td class="num">451</td><td>Нет отдельной страницы</td><td>Создать /outsourcing/gruzchiki-sklad</td></tr>
+            <tr><td>подбор персонала аутсорсинг</td><td class="num">19.1</td><td class="num">443</td><td>Каннибализация</td><td>Склеить с основной страницей аутсорсинга</td></tr>
+            <tr><td>аутсорсинг курьеров</td><td class="num">18.3</td><td class="num">390</td><td>Нет цен</td><td>Добавить «Стоимость аутсорсинга курьеров»</td></tr>
+            <tr><td>аутсорсинг поваров</td><td class="num">7.8</td><td class="num">210</td><td>Мало контента</td><td>Добавить кейс по кухонному персоналу</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-title">Фаза 3 — Наращивание авторитета (7-12 недель)</div>
+      <div class="phase-desc">Цель: коммерческие запросы, застрявшие на 6-10. Ожидаемый эффект: <strong>+400-600 кликов/мес</strong>.</div>
+      <div class="scroll-x">
+        <table>
+          <thead><tr><th>Запрос</th><th>Движки</th><th class="num">Позиции</th><th>Стратегия</th></tr></thead>
+          <tbody>
+            <tr><td>аутсорсинг разнорабочих</td><td><span class="badge badge-both">Оба</span></td><td class="num">10.7 / 11.6</td><td>Бэклинки с HR/отраслевых сайтов</td></tr>
+            <tr><td>услуги грузчиков аутсорсинг</td><td><span class="badge badge-both">Оба</span></td><td class="num">12.3 / 12.5</td><td>Гост-посты на логистических блогах</td></tr>
+            <tr><td>аутсорсинг комплектовщиков</td><td><span class="badge badge-both">Оба</span></td><td class="num">17.1 / 13.8</td><td>Сравнительная страница с конкурентами</td></tr>
+            <tr><td>аутсорсинг курьеров</td><td><span class="badge badge-both">Оба</span></td><td class="num">18.3 / 10.4</td><td>Партнёрство с агрегаторами доставки</td></tr>
+            <tr><td>аутсорсинг продавцов</td><td><span class="badge badge-both">Оба</span></td><td class="num">18.8 / 9.5</td><td>Каталоги retail-отрасли</td></tr>
+            <tr><td>аутсорсинг кассиров</td><td><span class="badge badge-both">Оба</span></td><td class="num">9.6 / 8.9</td><td>Schema.org + FAQ для расширенных сниппетов</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Engine-Specific Tactics -->
+  <div class="card">
+    <h2>🔧 Специфичные тактики по движкам</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <h3 style="color:var(--google);margin-top:0;">Google</h3>
+        <ul style="font-size:13px;padding-left:18px;margin:0;">
+          <li><strong>Core Web Vitals</strong> — LCP < 2.5 с, CLS < 0.1</li>
+          <li><strong>E-E-A-T</strong> — авторские био, даты, цитаты</li>
+          <li><strong>Избранные сниппеты</strong> — FAQ для «что такое / как / стоимость»</li>
+          <li><strong>Внутренние ссылки</strong> — с топовых страниц на 11-20</li>
+          <li><strong>A/B тесты заголовков</strong> — высокие показы, низкий CTR</li>
+          <li><strong>Мобильная адаптивность</strong> — пройти Mobile-Friendly Test</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="color:#c28a00;margin-top:0;">Яндекс</h3>
+        <ul style="font-size:13px;padding-left:18px;margin:0;">
+          <li><strong>Турбо-страницы</strong> — включить для всех в зоне 6-20</li>
+          <li><strong>Поведенческие факторы</strong> — время на сайте, отказы</li>
+          <li><strong>Гео-таргетинг</strong> — регионы в Вебмастере, Яндекс.Карты</li>
+          <li><strong>Синергия с Директом</strong> — параллельные кампании для 6-10</li>
+          <li><strong>Свежесть контента</strong> — обновлять статьи ежеквартально</li>
+          <li><strong>Schema.org</strong> — Organization, BreadcrumbList, FAQPage</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="card">
+    <h2>📈 KPI и целевые метрики (12 недель)</h2>
+    <div class="scroll-x">
+      <table>
+        <thead>
+          <tr>
+            <th>Метрика</th>
+            <th class="num">База</th>
+            <th class="num">Неделя 4</th>
+            <th class="num">Неделя 8</th>
+            <th class="num">Неделя 12</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Запросы 1-5 (Google)</td><td class="num">133</td><td class="num">180</td><td class="num">250</td><td class="num">320</td></tr>
+          <tr><td>Запросы 1-5 (Яндекс)</td><td class="num">506</td><td class="num">600</td><td class="num">750</td><td class="num">900</td></tr>
+          <tr><td>Запросы 6-10 (Google) ↓</td><td class="num">272</td><td class="num">220</td><td class="num">180</td><td class="num">150</td></tr>
+          <tr><td>Запросы 6-10 (Яндекс) ↓</td><td class="num">1 562</td><td class="num">1 400</td><td class="num">1 200</td><td class="num">1 000</td></tr>
+          <tr><td>Всего кликов (Google)</td><td class="num">543</td><td class="num">700</td><td class="num">900</td><td class="num">1 200</td></tr>
+          <tr><td>Всего кликов (Яндекс)</td><td class="num">976</td><td class="num">1 200</td><td class="num">1 500</td><td class="num">1 900</td></tr>
+          <tr><td>Средняя позиция (Google)</td><td class="num">12.4</td><td class="num">11.0</td><td class="num">9.5</td><td class="num">8.0</td></tr>
+          <tr><td>Средняя позиция (Яндекс)</td><td class="num">9.6</td><td class="num">8.5</td><td class="num">7.5</td><td class="num">6.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Next Steps -->
+  <div class="card">
+    <h2>✅ Следующие шаги</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div>
+        <div class="phase-title">Сегодня</div>
+        <ul class="todo">
+          <li>Поделиться отчётом с командой</li>
+          <li>Определить, какие запросы Фазы 1 имеют отдельные страницы</li>
+          <li>Настроить еженедельный трекинг позиций в GSC + Вебмастере</li>
+        </ul>
+      </div>
+      <div>
+        <div class="phase-title">На этой неделе</div>
+        <ul class="todo">
+          <li>Переписать title и meta для запросов Фазы 1</li>
+          <li>Запустить Pagespeed Insights для страниц в зоне 6-10</li>
+          <li>Аудит внутренних ссылок — с топовых на 11-20</li>
+        </ul>
+      </div>
+      <div>
+        <div class="phase-title">В ближайшие 2 недели</div>
+        <ul class="todo">
+          <li>Создать недостающие посадочные (грузчики на склад, курьеры, повара)</li>
+          <li>Внедрить FAQ-схему на всех страницах услуг</li>
+          <li>Отправить обновлённый sitemap в Google + Яндекс</li>
+        </ul>
+      </div>
+      <div>
+        <div class="phase-title">Постоянно</div>
+        <ul class="todo">
+          <li>Еженедельные выгрузки GSC + Вебмастер и трекинг</li>
+          <li>Ежемесячное обновление контента для страниц в зоне 6-20</li>
+          <li>Ежеквартальные кампании по бэклинкам</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Сгенерировано из выгрузок GSC (1 003 запроса, 443 страницы) и Яндекс.Вебмастер (2 955 запросов) · 29.05.2026
+  </footer>
+
+</div>
+</body>
+</html>
